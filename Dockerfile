@@ -1,27 +1,17 @@
-# Use a base PHP image with Apache
+# Usa a imagem oficial do PHP com Apache
 FROM php:8.2-apache
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    unzip \
-    git \
-    curl \
-    nodejs \
-    npm \
-    && docker-php-ext-install zip pdo pdo_mysql
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
-
-# Install Composer
-COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
-
-# Set the working directory
+# Define o diretório padrão do Apache
 WORKDIR /var/www/html
 
-# Set permissions for the project
-RUN chown -R www-data:www-data /var/www/html
+# Copia os arquivos do projeto para dentro do container
+COPY ./src /var/www/html
 
-# Expose the default Apache port
+# Habilita o módulo de reescrita do Apache
+RUN a2enmod rewrite
+
+# Expõe a porta 80 para acesso ao servidor
 EXPOSE 80
+
+# Inicia o Apache
+CMD ["apache2-foreground"]
